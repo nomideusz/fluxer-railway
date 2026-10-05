@@ -49,6 +49,56 @@
      "defaultValue": "${{app-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
      "description": "app-proxy upstream",
      "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{RAILWAY_PUBLIC_DOMAIN}}",
+     "description": "Public hostname every service reads. Change this when you add a custom domain",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{secret(44, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Upload relay token key (base64, >=32 bytes)",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_SEED": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Seed the web-push VAPID keypair is derived from at boot",
+     "isOptional": false
+    },
+    "FLUXER_BOOT_JS": {
+     "defaultValue": "const c=process.getBuiltinModule('crypto'),u=process.getBuiltinModule('url'),e=process.env;if(!e.FLUXER_VAPID_PRIVATE_KEY){const k=c.createHash('sha256').update('fluxer-vapid:'+e.FLUXER_VAPID_SEED).digest(),d=c.createECDH('prime256v1');d.setPrivateKey(k);e.FLUXER_VAPID_PRIVATE_KEY=k.toString('base64url');e.FLUXER_VAPID_PUBLIC_KEY=d.getPublicKey().toString('base64url')}import(u.pathToFileURL(process.argv[1]).href)",
+     "description": "Boot shim: derives FLUXER_VAPID_* from FLUXER_VAPID_SEED, then starts Fluxer. Don't edit",
+     "isOptional": false
     }
    }
   },
@@ -80,8 +130,8 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{Fluxer.RAILWAY_PUBLIC_DOMAIN}}",
-     "description": "Public hostname every service reads. Change this when you add a custom domain",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname (set on the api service)",
      "isOptional": false
     },
     "FLUXER_PUBLIC_SCHEME": {
@@ -100,27 +150,27 @@
      "isOptional": false
     },
     "FLUXER_APP_ENDPOINT": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web app URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_ENDPOINT": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_ADMIN_ENDPOINT": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/admin",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/admin",
      "description": "Admin dashboard URL",
      "isOptional": false
     },
     "FLUXER_MARKETING_ENDPOINT": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Marketing URL",
      "isOptional": false
     },
@@ -265,57 +315,57 @@
      "isOptional": false
     },
     "FLUXER_EMAIL_FROM_EMAIL": {
-     "defaultValue": "noreply@${{FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "noreply@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "From address once SMTP is configured",
      "isOptional": false
     },
     "FLUXER_SUDO_MODE_SECRET": {
-     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "defaultValue": "${{Fluxer.FLUXER_SUDO_MODE_SECRET}}",
      "description": "Sudo-mode JWT key",
      "isOptional": false
     },
     "FLUXER_CONNECTION_INITIATION_SECRET": {
-     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "defaultValue": "${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}",
      "description": "Connection initiation token key",
      "isOptional": false
     },
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
-     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "defaultValue": "${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
      "description": "API<->Gateway RPC token",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_SECRET_KEY": {
-     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
      "description": "Media proxy URL signing key",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
-     "defaultValue": "${{secret(44, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
-     "description": "Upload relay token key (base64, >=32 bytes)",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "description": "Upload relay token key",
      "isOptional": false
     },
     "FLUXER_ADMIN_SECRET_KEY_BASE": {
-     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}",
      "description": "Admin session key",
      "isOptional": false
     },
     "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
-     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
      "description": "Admin OAuth client secret",
      "isOptional": false
     },
     "FLUXER_VAPID_EMAIL": {
-     "defaultValue": "admin@${{FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "admin@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web push contact",
      "isOptional": false
     },
     "FLUXER_PASSKEY_RP_ID": {
-     "defaultValue": "${{FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey relying party",
      "isOptional": false
     },
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey origins",
      "isOptional": false
     },
@@ -330,18 +380,23 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
-     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Upload relay URL",
      "isOptional": false
     },
     "FLUXER_VAPID_SEED": {
-     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
-     "description": "Seed the web-push VAPID keypair is derived from at boot",
+     "defaultValue": "${{Fluxer.FLUXER_VAPID_SEED}}",
+     "description": "Seed for the derived VAPID keypair",
      "isOptional": false
     },
     "FLUXER_BOOT_JS": {
-     "defaultValue": "const c=process.getBuiltinModule('crypto'),u=process.getBuiltinModule('url'),e=process.env;if(!e.FLUXER_VAPID_PRIVATE_KEY){const k=c.createHash('sha256').update('fluxer-vapid:'+e.FLUXER_VAPID_SEED).digest(),d=c.createECDH('prime256v1');d.setPrivateKey(k);e.FLUXER_VAPID_PRIVATE_KEY=k.toString('base64url');e.FLUXER_VAPID_PUBLIC_KEY=d.getPublicKey().toString('base64url')}import(u.pathToFileURL(process.argv[1]).href)",
-     "description": "Boot shim: derives FLUXER_VAPID_* from FLUXER_VAPID_SEED, then starts Fluxer. Don't edit",
+     "defaultValue": "${{Fluxer.FLUXER_BOOT_JS}}",
+     "description": "Boot shim",
+     "isOptional": false
+    },
+    "SVC_DEPENDENCY": {
+     "defaultValue": "${{svc.PORT}}",
+     "description": "Orders this service after svc on deploy. Don't edit",
      "isOptional": false
     },
     "PORT": {
@@ -394,7 +449,7 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Public hostname (set on the api service)",
      "isOptional": false
     },
@@ -414,27 +469,27 @@
      "isOptional": false
     },
     "FLUXER_APP_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web app URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_ADMIN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/admin",
      "description": "Admin dashboard URL",
      "isOptional": false
     },
     "FLUXER_MARKETING_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Marketing URL",
      "isOptional": false
     },
@@ -579,57 +634,57 @@
      "isOptional": false
     },
     "FLUXER_EMAIL_FROM_EMAIL": {
-     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "noreply@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "From address once SMTP is configured",
      "isOptional": false
     },
     "FLUXER_SUDO_MODE_SECRET": {
-     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_SUDO_MODE_SECRET}}",
      "description": "Sudo-mode JWT key",
      "isOptional": false
     },
     "FLUXER_CONNECTION_INITIATION_SECRET": {
-     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}",
      "description": "Connection initiation token key",
      "isOptional": false
     },
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
-     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "defaultValue": "${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
      "description": "API<->Gateway RPC token",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_SECRET_KEY": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
      "description": "Media proxy URL signing key",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
      "description": "Upload relay token key",
      "isOptional": false
     },
     "FLUXER_ADMIN_SECRET_KEY_BASE": {
-     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}",
      "description": "Admin session key",
      "isOptional": false
     },
     "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
-     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
      "description": "Admin OAuth client secret",
      "isOptional": false
     },
     "FLUXER_VAPID_EMAIL": {
-     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "admin@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web push contact",
      "isOptional": false
     },
     "FLUXER_PASSKEY_RP_ID": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey relying party",
      "isOptional": false
     },
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey origins",
      "isOptional": false
     },
@@ -644,18 +699,23 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Upload relay URL",
      "isOptional": false
     },
     "FLUXER_VAPID_SEED": {
-     "defaultValue": "${{api.FLUXER_VAPID_SEED}}",
-     "description": "Same seed as api",
+     "defaultValue": "${{Fluxer.FLUXER_VAPID_SEED}}",
+     "description": "Seed for the derived VAPID keypair",
      "isOptional": false
     },
     "FLUXER_BOOT_JS": {
-     "defaultValue": "${{api.FLUXER_BOOT_JS}}",
-     "description": "Boot shim from api",
+     "defaultValue": "${{Fluxer.FLUXER_BOOT_JS}}",
+     "description": "Boot shim",
+     "isOptional": false
+    },
+    "SVC_DEPENDENCY": {
+     "defaultValue": "${{svc.PORT}}",
+     "description": "Orders this service after svc on deploy. Don't edit",
      "isOptional": false
     },
     "FLUXER_API_WORKER_MODE": {
@@ -703,7 +763,7 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Public hostname (set on the api service)",
      "isOptional": false
     },
@@ -723,27 +783,27 @@
      "isOptional": false
     },
     "FLUXER_APP_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web app URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_ADMIN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/admin",
      "description": "Admin dashboard URL",
      "isOptional": false
     },
     "FLUXER_MARKETING_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Marketing URL",
      "isOptional": false
     },
@@ -888,57 +948,57 @@
      "isOptional": false
     },
     "FLUXER_EMAIL_FROM_EMAIL": {
-     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "noreply@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "From address once SMTP is configured",
      "isOptional": false
     },
     "FLUXER_SUDO_MODE_SECRET": {
-     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_SUDO_MODE_SECRET}}",
      "description": "Sudo-mode JWT key",
      "isOptional": false
     },
     "FLUXER_CONNECTION_INITIATION_SECRET": {
-     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}",
      "description": "Connection initiation token key",
      "isOptional": false
     },
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
-     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "defaultValue": "${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
      "description": "API<->Gateway RPC token",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_SECRET_KEY": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
      "description": "Media proxy URL signing key",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
      "description": "Upload relay token key",
      "isOptional": false
     },
     "FLUXER_ADMIN_SECRET_KEY_BASE": {
-     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}",
      "description": "Admin session key",
      "isOptional": false
     },
     "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
-     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
      "description": "Admin OAuth client secret",
      "isOptional": false
     },
     "FLUXER_VAPID_EMAIL": {
-     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "admin@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web push contact",
      "isOptional": false
     },
     "FLUXER_PASSKEY_RP_ID": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey relying party",
      "isOptional": false
     },
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey origins",
      "isOptional": false
     },
@@ -953,7 +1013,7 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Upload relay URL",
      "isOptional": false
     },
@@ -973,12 +1033,12 @@
      "isOptional": false
     },
     "FLUXER_GATEWAY_MEDIA_PROXY_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_GATEWAY_STATIC_CDN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Static CDN URL",
      "isOptional": false
     }
@@ -1012,7 +1072,7 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Public hostname (set on the api service)",
      "isOptional": false
     },
@@ -1032,27 +1092,27 @@
      "isOptional": false
     },
     "FLUXER_APP_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web app URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_ADMIN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/admin",
      "description": "Admin dashboard URL",
      "isOptional": false
     },
     "FLUXER_MARKETING_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Marketing URL",
      "isOptional": false
     },
@@ -1197,57 +1257,57 @@
      "isOptional": false
     },
     "FLUXER_EMAIL_FROM_EMAIL": {
-     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "noreply@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "From address once SMTP is configured",
      "isOptional": false
     },
     "FLUXER_SUDO_MODE_SECRET": {
-     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_SUDO_MODE_SECRET}}",
      "description": "Sudo-mode JWT key",
      "isOptional": false
     },
     "FLUXER_CONNECTION_INITIATION_SECRET": {
-     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}",
      "description": "Connection initiation token key",
      "isOptional": false
     },
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
-     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "defaultValue": "${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
      "description": "API<->Gateway RPC token",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_SECRET_KEY": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
      "description": "Media proxy URL signing key",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
      "description": "Upload relay token key",
      "isOptional": false
     },
     "FLUXER_ADMIN_SECRET_KEY_BASE": {
-     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}",
      "description": "Admin session key",
      "isOptional": false
     },
     "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
-     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
      "description": "Admin OAuth client secret",
      "isOptional": false
     },
     "FLUXER_VAPID_EMAIL": {
-     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "admin@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web push contact",
      "isOptional": false
     },
     "FLUXER_PASSKEY_RP_ID": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey relying party",
      "isOptional": false
     },
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey origins",
      "isOptional": false
     },
@@ -1262,7 +1322,7 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Upload relay URL",
      "isOptional": false
     },
@@ -1287,7 +1347,7 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_CORS_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "CORS origins",
      "isOptional": false
     },
@@ -1326,7 +1386,7 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Public hostname",
      "isOptional": false
     },
@@ -1381,7 +1441,7 @@
      "isOptional": false
     },
     "PUBLIC_BOOTSTRAP_API_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/api",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/api",
      "description": "Absolute API URL in the page bootstrap",
      "isOptional": false
     }
@@ -1416,7 +1476,7 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Public hostname (set on the api service)",
      "isOptional": false
     },
@@ -1436,27 +1496,27 @@
      "isOptional": false
     },
     "FLUXER_APP_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web app URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_ADMIN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/admin",
      "description": "Admin dashboard URL",
      "isOptional": false
     },
     "FLUXER_MARKETING_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Marketing URL",
      "isOptional": false
     },
@@ -1601,57 +1661,57 @@
      "isOptional": false
     },
     "FLUXER_EMAIL_FROM_EMAIL": {
-     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "noreply@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "From address once SMTP is configured",
      "isOptional": false
     },
     "FLUXER_SUDO_MODE_SECRET": {
-     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_SUDO_MODE_SECRET}}",
      "description": "Sudo-mode JWT key",
      "isOptional": false
     },
     "FLUXER_CONNECTION_INITIATION_SECRET": {
-     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}",
      "description": "Connection initiation token key",
      "isOptional": false
     },
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
-     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "defaultValue": "${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
      "description": "API<->Gateway RPC token",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_SECRET_KEY": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
      "description": "Media proxy URL signing key",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
      "description": "Upload relay token key",
      "isOptional": false
     },
     "FLUXER_ADMIN_SECRET_KEY_BASE": {
-     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}",
      "description": "Admin session key",
      "isOptional": false
     },
     "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
-     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
      "description": "Admin OAuth client secret",
      "isOptional": false
     },
     "FLUXER_VAPID_EMAIL": {
-     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "admin@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web push contact",
      "isOptional": false
     },
     "FLUXER_PASSKEY_RP_ID": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey relying party",
      "isOptional": false
     },
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey origins",
      "isOptional": false
     },
@@ -1666,7 +1726,7 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Upload relay URL",
      "isOptional": false
     },
@@ -1705,7 +1765,7 @@
      "isOptional": false
     },
     "FLUXER_BASE_DOMAIN": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Public hostname (set on the api service)",
      "isOptional": false
     },
@@ -1725,27 +1785,27 @@
      "isOptional": false
     },
     "FLUXER_APP_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web app URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Public media URL",
      "isOptional": false
     },
     "FLUXER_ADMIN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/admin",
      "description": "Admin dashboard URL",
      "isOptional": false
     },
     "FLUXER_MARKETING_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Marketing URL",
      "isOptional": false
     },
@@ -1890,57 +1950,57 @@
      "isOptional": false
     },
     "FLUXER_EMAIL_FROM_EMAIL": {
-     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "noreply@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "From address once SMTP is configured",
      "isOptional": false
     },
     "FLUXER_SUDO_MODE_SECRET": {
-     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_SUDO_MODE_SECRET}}",
      "description": "Sudo-mode JWT key",
      "isOptional": false
     },
     "FLUXER_CONNECTION_INITIATION_SECRET": {
-     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}",
      "description": "Connection initiation token key",
      "isOptional": false
     },
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
-     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "defaultValue": "${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
      "description": "API<->Gateway RPC token",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_SECRET_KEY": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
      "description": "Media proxy URL signing key",
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
-     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "defaultValue": "${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
      "description": "Upload relay token key",
      "isOptional": false
     },
     "FLUXER_ADMIN_SECRET_KEY_BASE": {
-     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}",
      "description": "Admin session key",
      "isOptional": false
     },
     "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
-     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "defaultValue": "${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
      "description": "Admin OAuth client secret",
      "isOptional": false
     },
     "FLUXER_VAPID_EMAIL": {
-     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "admin@${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Web push contact",
      "isOptional": false
     },
     "FLUXER_PASSKEY_RP_ID": {
-     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey relying party",
      "isOptional": false
     },
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Passkey origins",
      "isOptional": false
     },
@@ -1955,7 +2015,7 @@
      "isOptional": false
     },
     "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}/media",
      "description": "Upload relay URL",
      "isOptional": false
     },
@@ -1980,7 +2040,7 @@
      "isOptional": false
     },
     "FLUXER_STATIC_CDN_ENDPOINT": {
-     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "defaultValue": "https://${{Fluxer.FLUXER_BASE_DOMAIN}}",
      "description": "Static CDN URL",
      "isOptional": false
     }

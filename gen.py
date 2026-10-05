@@ -3,7 +3,9 @@
 
 Upstream compose shares one env block across every Fluxer container; Railway has no
 anchors, so it's built here once and stamped onto each service. `api` holds the root
-values (domain, secrets) and everything else references `${{api.X}}`.
+values (domain, secrets) live on the edge service "Fluxer", and everything else references
+`${{Fluxer.X}}`. Railway orders deploys by user-variable references (refs to RAILWAY_*_DOMAIN
+don't count), so roots must sit on a service with no app deps, or deploys deadlock.
 """
 import json, uuid
 
@@ -21,7 +23,7 @@ def sid(name): return str(uuid.uuid5(uuid.NAMESPACE_URL, f"fluxer-railway/{name}
 def secret(n, cs=ALNUM): return f'${{{{secret({n}, "{cs}")}}}}'
 def priv(svc): return f"${{{{{svc}.RAILWAY_PRIVATE_DOMAIN}}}}"
 
-DOMAIN = "${{api.FLUXER_BASE_DOMAIN}}"
+DOMAIN = "${{Fluxer.FLUXER_BASE_DOMAIN}}"
 ORIGIN = f"https://{DOMAIN}"
 
 def v(value, desc, optional=False):
@@ -69,13 +71,13 @@ COMMON = {
     "FLUXER_GATEWAY_PUSH_ENABLED": v("false", "Browser push notifications (push service not deployed)"),
     "FLUXER_EMAIL_ENABLED": v("false", "Email. Off = addresses auto-verified, no password reset mail"),
     "FLUXER_EMAIL_FROM_EMAIL": v(f"noreply@{DOMAIN}", "From address once SMTP is configured"),
-    "FLUXER_SUDO_MODE_SECRET": v("${{api.FLUXER_SUDO_MODE_SECRET}}", "Sudo-mode JWT key"),
-    "FLUXER_CONNECTION_INITIATION_SECRET": v("${{api.FLUXER_CONNECTION_INITIATION_SECRET}}", "Connection initiation token key"),
-    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": v("${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}", "API<->Gateway RPC token"),
-    "FLUXER_MEDIA_PROXY_SECRET_KEY": v("${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}", "Media proxy URL signing key"),
-    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": v("${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}", "Upload relay token key"),
-    "FLUXER_ADMIN_SECRET_KEY_BASE": v("${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}", "Admin session key"),
-    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": v("${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}", "Admin OAuth client secret"),
+    "FLUXER_SUDO_MODE_SECRET": v("${{Fluxer.FLUXER_SUDO_MODE_SECRET}}", "Sudo-mode JWT key"),
+    "FLUXER_CONNECTION_INITIATION_SECRET": v("${{Fluxer.FLUXER_CONNECTION_INITIATION_SECRET}}", "Connection initiation token key"),
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": v("${{Fluxer.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}", "API<->Gateway RPC token"),
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": v("${{Fluxer.FLUXER_MEDIA_PROXY_SECRET_KEY}}", "Media proxy URL signing key"),
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": v("${{Fluxer.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}", "Upload relay token key"),
+    "FLUXER_ADMIN_SECRET_KEY_BASE": v("${{Fluxer.FLUXER_ADMIN_SECRET_KEY_BASE}}", "Admin session key"),
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": v("${{Fluxer.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}", "Admin OAuth client secret"),
     "FLUXER_VAPID_EMAIL": v(f"admin@{DOMAIN}", "Web push contact"),
     "FLUXER_PASSKEY_RP_ID": v(DOMAIN, "Passkey relying party"),
     "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": v(ORIGIN, "Passkey origins"),
@@ -93,8 +95,8 @@ BOOT_JS = ("const c=process.getBuiltinModule('crypto'),u=process.getBuiltinModul
            "import(u.pathToFileURL(process.argv[1]).href)")
 def node_start(entry): return f"/bin/sh -c 'exec node -e \"$FLUXER_BOOT_JS\" dist/{entry}'"
 
-API_ROOT = {
-    "FLUXER_BASE_DOMAIN": v("${{Fluxer.RAILWAY_PUBLIC_DOMAIN}}", "Public hostname every service reads. Change this when you add a custom domain"),
+ROOT = {
+    "FLUXER_BASE_DOMAIN": v("${{RAILWAY_PUBLIC_DOMAIN}}", "Public hostname every service reads. Change this when you add a custom domain"),
     "FLUXER_SUDO_MODE_SECRET": v(secret(64, HEX), "Sudo-mode JWT key"),
     "FLUXER_CONNECTION_INITIATION_SECRET": v(secret(64, HEX), "Connection initiation token key"),
     "FLUXER_GATEWAY_RPC_AUTH_TOKEN": v(secret(64, HEX), "API<->Gateway RPC token"),
@@ -105,6 +107,10 @@ API_ROOT = {
     "FLUXER_VAPID_SEED": v(secret(48), "Seed the web-push VAPID keypair is derived from at boot"),
     "FLUXER_BOOT_JS": v(BOOT_JS, "Boot shim: derives FLUXER_VAPID_* from FLUXER_VAPID_SEED, then starts Fluxer. Don't edit"),
 }
+
+# api/worker exit at boot when the internal services don't answer on NATS; referencing a svc
+# variable makes Railway hold them until svc is deployed.
+SVC_DEP = v("${{svc.PORT}}", "Orders this service after svc on deploy. Don't edit")
 
 def svc(name, icon, source, variables, *, start=None, health=None, domain=False, volume=None):
     s = {"icon": icon, "name": name, "build": {},
@@ -131,16 +137,21 @@ services = [
         "MEDIA_UPSTREAM": v(f"{priv('media-proxy')}:8080", "media-proxy upstream"),
         "ADMIN_UPSTREAM": v(f"{priv('admin')}:8080", "admin upstream"),
         "APP_UPSTREAM": v(f"{priv('app-proxy')}:8080", "app-proxy upstream"),
+        **ROOT,
     }, health="/_health", domain=True),
     svc("api", ICON, img("api"), {k: {**x, "defaultValue": x["defaultValue"].replace("${{api.", "${{")}
-        for k, x in {**common(), **API_ROOT}.items()} | {
+        for k, x in common().items()} | {
+        "FLUXER_VAPID_SEED": v("${{Fluxer.FLUXER_VAPID_SEED}}", "Seed for the derived VAPID keypair"),
+        "FLUXER_BOOT_JS": v("${{Fluxer.FLUXER_BOOT_JS}}", "Boot shim"),
+        "SVC_DEPENDENCY": SVC_DEP,
         "PORT": v("8080", "Listen port"), "FLUXER_API_PORT": v("8080", "Listen port"),
         "FLUXER_POSTGRES_MAX_CONNECTIONS": v("20", "Postgres pool size"),
         "FLUXER_API_PRESIGNED_ATTACHMENT_UPLOADS_ENABLED": v("true", "Presigned attachment uploads")},
         start=node_start("AppEntrypoint.js"), health="/_health"),
     svc("worker", ICON, img("api"), common(
-        FLUXER_VAPID_SEED=v("${{api.FLUXER_VAPID_SEED}}", "Same seed as api"),
-        FLUXER_BOOT_JS=v("${{api.FLUXER_BOOT_JS}}", "Boot shim from api"),
+        FLUXER_VAPID_SEED=v("${{Fluxer.FLUXER_VAPID_SEED}}", "Seed for the derived VAPID keypair"),
+        FLUXER_BOOT_JS=v("${{Fluxer.FLUXER_BOOT_JS}}", "Boot shim"),
+        SVC_DEPENDENCY=SVC_DEP,
         FLUXER_API_WORKER_MODE=v("all_lanes", "Run every job lane"),
         FLUXER_API_WORKER_ENABLE_CRON_SCHEDULER=v("true", "Run cron jobs"),
         FLUXER_POSTGRES_MAX_CONNECTIONS=v("15", "Postgres pool size")),

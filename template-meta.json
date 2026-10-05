@@ -5,5 +5,6 @@
   "category": "Other",
   "image": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
   "card_desc": "Fluxer: the open-source Discord alternative. Servers, text channels, DMs, roles, file uploads and message search on your own Railway project.",
-  "id": "a4b3e7ba-6343-471c-8ae5-6a8fcaa47e83"
+  "id": "a4b3e7ba-6343-471c-8ae5-6a8fcaa47e83",
+  "published": true
 }

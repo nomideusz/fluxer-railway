@@ -1,5 +1,7 @@
 # Deploy and Host Fluxer on Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/fluxer-chat?utm_medium=integration&utm_source=button&utm_campaign=fluxer-chat)
+
 [Fluxer](https://fluxer.app/) is an open-source alternative to Discord. It has communities (servers), text channels, replies, DMs and group DMs, roles and permissions, invites, emoji, file uploads with previews, link embeds and full-text message search, all in a fast web client. This template runs the official Fluxer images in **text-chat mode**, with every database and secret generated for you. Voice and video are switched off because Railway has no UDP.
 
 ## About Hosting Fluxer

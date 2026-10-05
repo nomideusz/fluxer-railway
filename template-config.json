@@ -1,0 +1,2185 @@
+{
+ "services": {
+  "7322c947-0399-5860-965d-363a9bf076f3": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "Fluxer",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "repo": "https://github.com/nomideusz/fluxer-railway",
+    "rootDirectory": "/edge"
+   },
+   "networking": {
+    "serviceDomains": {
+     "<hasDomain>": {}
+    }
+   },
+   "variables": {
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Edge listen port",
+     "isOptional": false
+    },
+    "API_UPSTREAM": {
+     "defaultValue": "${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "api upstream",
+     "isOptional": false
+    },
+    "GATEWAY_UPSTREAM": {
+     "defaultValue": "${{gateway.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "gateway upstream",
+     "isOptional": false
+    },
+    "MEDIA_UPSTREAM": {
+     "defaultValue": "${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "media-proxy upstream",
+     "isOptional": false
+    },
+    "ADMIN_UPSTREAM": {
+     "defaultValue": "${{admin.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "admin upstream",
+     "isOptional": false
+    },
+    "APP_UPSTREAM": {
+     "defaultValue": "${{app-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "app-proxy upstream",
+     "isOptional": false
+    }
+   }
+  },
+  "c97dc882-4710-5056-bd05-d574435fe8fc": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "api",
+   "build": {},
+   "deploy": {
+    "startCommand": "/bin/sh -c 'exec node -e \"$FLUXER_BOOT_JS\" dist/AppEntrypoint.js'",
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/fluxerapp/fluxer-api:2026.1004.160619"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "FLUXER_ENV": {
+     "defaultValue": "production",
+     "description": "Runtime environment",
+     "isOptional": false
+    },
+    "FLUXER_SELF_HOSTED": {
+     "defaultValue": "true",
+     "description": "Self-hosted mode",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{Fluxer.RAILWAY_PUBLIC_DOMAIN}}",
+     "description": "Public hostname every service reads. Change this when you add a custom domain",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_APP_ENDPOINT": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}",
+     "description": "Web app URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_ENDPOINT": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_ENDPOINT": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/admin",
+     "description": "Admin dashboard URL",
+     "isOptional": false
+    },
+    "FLUXER_MARKETING_ENDPOINT": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}",
+     "description": "Marketing URL",
+     "isOptional": false
+    },
+    "FLUXER_DATABASE_BACKEND": {
+     "defaultValue": "postgres",
+     "description": "Database backend",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_HOST": {
+     "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Postgres host",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PORT": {
+     "defaultValue": "5432",
+     "description": "Postgres port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_DATABASE": {
+     "defaultValue": "${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres database",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "FLUXER_KV_URL": {
+     "defaultValue": "redis://:${{Valkey.VALKEY_PASSWORD}}@${{Valkey.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
+     "description": "Valkey URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_JETSTREAM_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS JetStream URL",
+     "isOptional": false
+    },
+    "FLUXER_SVC_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL for internal services",
+     "isOptional": false
+    },
+    "FLUXER_SVC_SHARD_COUNT": {
+     "defaultValue": "1",
+     "description": "Internal service shard count",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_ENGINE": {
+     "defaultValue": "meilisearch",
+     "description": "Search engine",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_URL": {
+     "defaultValue": "http://${{Meilisearch.RAILWAY_PRIVATE_DOMAIN}}:7700",
+     "description": "Meilisearch URL",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_API_KEY": {
+     "defaultValue": "${{Meilisearch.MEILI_MASTER_KEY}}",
+     "description": "Meilisearch master key",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_PUBLIC_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint used in presigned URLs (relayed via /media)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_FORCE_PATH_STYLE": {
+     "defaultValue": "true",
+     "description": "Path-style S3 addressing",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_CDN": {
+     "defaultValue": "fluxer",
+     "description": "Processed assets bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_REPORTS": {
+     "defaultValue": "fluxer-reports",
+     "description": "Abuse reports bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_HARVESTS": {
+     "defaultValue": "fluxer-harvests",
+     "description": "Data export bucket",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_HARVEST_DOWNLOADS_ENABLED": {
+     "defaultValue": "false",
+     "description": "Presigned data-export downloads",
+     "isOptional": false
+    },
+    "FLUXER_LIVEKIT_ENABLED": {
+     "defaultValue": "false",
+     "description": "Voice/video. Off: LiveKit needs UDP, which Railway does not offer",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PUSH_ENABLED": {
+     "defaultValue": "false",
+     "description": "Browser push notifications (push service not deployed)",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_ENABLED": {
+     "defaultValue": "false",
+     "description": "Email. Off = addresses auto-verified, no password reset mail",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_FROM_EMAIL": {
+     "defaultValue": "noreply@${{FLUXER_BASE_DOMAIN}}",
+     "description": "From address once SMTP is configured",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{secret(44, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Upload relay token key (base64, >=32 bytes)",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{secret(64, \"0123456789abcdef\")}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_EMAIL": {
+     "defaultValue": "admin@${{FLUXER_BASE_DOMAIN}}",
+     "description": "Web push contact",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_RP_ID": {
+     "defaultValue": "${{FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey relying party",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey origins",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_API_ENDPOINT": {
+     "defaultValue": "http://${{RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "http://${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal media proxy URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
+     "defaultValue": "https://${{FLUXER_BASE_DOMAIN}}/media",
+     "description": "Upload relay URL",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_SEED": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Seed the web-push VAPID keypair is derived from at boot",
+     "isOptional": false
+    },
+    "FLUXER_BOOT_JS": {
+     "defaultValue": "const c=process.getBuiltinModule('crypto'),u=process.getBuiltinModule('url'),e=process.env;if(!e.FLUXER_VAPID_PRIVATE_KEY){const k=c.createHash('sha256').update('fluxer-vapid:'+e.FLUXER_VAPID_SEED).digest(),d=c.createECDH('prime256v1');d.setPrivateKey(k);e.FLUXER_VAPID_PRIVATE_KEY=k.toString('base64url');e.FLUXER_VAPID_PUBLIC_KEY=d.getPublicKey().toString('base64url')}import(u.pathToFileURL(process.argv[1]).href)",
+     "description": "Boot shim: derives FLUXER_VAPID_* from FLUXER_VAPID_SEED, then starts Fluxer. Don't edit",
+     "isOptional": false
+    },
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_API_PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_MAX_CONNECTIONS": {
+     "defaultValue": "20",
+     "description": "Postgres pool size",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_ATTACHMENT_UPLOADS_ENABLED": {
+     "defaultValue": "true",
+     "description": "Presigned attachment uploads",
+     "isOptional": false
+    }
+   }
+  },
+  "1a9efa50-1935-5d74-a61d-90bafed4ba2c": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "worker",
+   "build": {},
+   "deploy": {
+    "startCommand": "/bin/sh -c 'exec node -e \"$FLUXER_BOOT_JS\" dist/WorkerEntrypoint.js'",
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/fluxerapp/fluxer-api:2026.1004.160619"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "FLUXER_ENV": {
+     "defaultValue": "production",
+     "description": "Runtime environment",
+     "isOptional": false
+    },
+    "FLUXER_SELF_HOSTED": {
+     "defaultValue": "true",
+     "description": "Self-hosted mode",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname (set on the api service)",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_APP_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web app URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "description": "Admin dashboard URL",
+     "isOptional": false
+    },
+    "FLUXER_MARKETING_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Marketing URL",
+     "isOptional": false
+    },
+    "FLUXER_DATABASE_BACKEND": {
+     "defaultValue": "postgres",
+     "description": "Database backend",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_HOST": {
+     "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Postgres host",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PORT": {
+     "defaultValue": "5432",
+     "description": "Postgres port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_DATABASE": {
+     "defaultValue": "${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres database",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "FLUXER_KV_URL": {
+     "defaultValue": "redis://:${{Valkey.VALKEY_PASSWORD}}@${{Valkey.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
+     "description": "Valkey URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_JETSTREAM_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS JetStream URL",
+     "isOptional": false
+    },
+    "FLUXER_SVC_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL for internal services",
+     "isOptional": false
+    },
+    "FLUXER_SVC_SHARD_COUNT": {
+     "defaultValue": "1",
+     "description": "Internal service shard count",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_ENGINE": {
+     "defaultValue": "meilisearch",
+     "description": "Search engine",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_URL": {
+     "defaultValue": "http://${{Meilisearch.RAILWAY_PRIVATE_DOMAIN}}:7700",
+     "description": "Meilisearch URL",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_API_KEY": {
+     "defaultValue": "${{Meilisearch.MEILI_MASTER_KEY}}",
+     "description": "Meilisearch master key",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_PUBLIC_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint used in presigned URLs (relayed via /media)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_FORCE_PATH_STYLE": {
+     "defaultValue": "true",
+     "description": "Path-style S3 addressing",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_CDN": {
+     "defaultValue": "fluxer",
+     "description": "Processed assets bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_REPORTS": {
+     "defaultValue": "fluxer-reports",
+     "description": "Abuse reports bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_HARVESTS": {
+     "defaultValue": "fluxer-harvests",
+     "description": "Data export bucket",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_HARVEST_DOWNLOADS_ENABLED": {
+     "defaultValue": "false",
+     "description": "Presigned data-export downloads",
+     "isOptional": false
+    },
+    "FLUXER_LIVEKIT_ENABLED": {
+     "defaultValue": "false",
+     "description": "Voice/video. Off: LiveKit needs UDP, which Railway does not offer",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PUSH_ENABLED": {
+     "defaultValue": "false",
+     "description": "Browser push notifications (push service not deployed)",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_ENABLED": {
+     "defaultValue": "false",
+     "description": "Email. Off = addresses auto-verified, no password reset mail",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_FROM_EMAIL": {
+     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "From address once SMTP is configured",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "description": "Upload relay token key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_EMAIL": {
+     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web push contact",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_RP_ID": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey relying party",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey origins",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_API_ENDPOINT": {
+     "defaultValue": "http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "http://${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal media proxy URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Upload relay URL",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_SEED": {
+     "defaultValue": "${{api.FLUXER_VAPID_SEED}}",
+     "description": "Same seed as api",
+     "isOptional": false
+    },
+    "FLUXER_BOOT_JS": {
+     "defaultValue": "${{api.FLUXER_BOOT_JS}}",
+     "description": "Boot shim from api",
+     "isOptional": false
+    },
+    "FLUXER_API_WORKER_MODE": {
+     "defaultValue": "all_lanes",
+     "description": "Run every job lane",
+     "isOptional": false
+    },
+    "FLUXER_API_WORKER_ENABLE_CRON_SCHEDULER": {
+     "defaultValue": "true",
+     "description": "Run cron jobs",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_MAX_CONNECTIONS": {
+     "defaultValue": "15",
+     "description": "Postgres pool size",
+     "isOptional": false
+    }
+   }
+  },
+  "9768c4f6-efee-55db-b2e4-de5944d8e56e": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "gateway",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/fluxerapp/fluxer-gateway:2026.1004.10845"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "FLUXER_ENV": {
+     "defaultValue": "production",
+     "description": "Runtime environment",
+     "isOptional": false
+    },
+    "FLUXER_SELF_HOSTED": {
+     "defaultValue": "true",
+     "description": "Self-hosted mode",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname (set on the api service)",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_APP_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web app URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "description": "Admin dashboard URL",
+     "isOptional": false
+    },
+    "FLUXER_MARKETING_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Marketing URL",
+     "isOptional": false
+    },
+    "FLUXER_DATABASE_BACKEND": {
+     "defaultValue": "postgres",
+     "description": "Database backend",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_HOST": {
+     "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Postgres host",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PORT": {
+     "defaultValue": "5432",
+     "description": "Postgres port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_DATABASE": {
+     "defaultValue": "${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres database",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "FLUXER_KV_URL": {
+     "defaultValue": "redis://:${{Valkey.VALKEY_PASSWORD}}@${{Valkey.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
+     "description": "Valkey URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_JETSTREAM_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS JetStream URL",
+     "isOptional": false
+    },
+    "FLUXER_SVC_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL for internal services",
+     "isOptional": false
+    },
+    "FLUXER_SVC_SHARD_COUNT": {
+     "defaultValue": "1",
+     "description": "Internal service shard count",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_ENGINE": {
+     "defaultValue": "meilisearch",
+     "description": "Search engine",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_URL": {
+     "defaultValue": "http://${{Meilisearch.RAILWAY_PRIVATE_DOMAIN}}:7700",
+     "description": "Meilisearch URL",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_API_KEY": {
+     "defaultValue": "${{Meilisearch.MEILI_MASTER_KEY}}",
+     "description": "Meilisearch master key",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_PUBLIC_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint used in presigned URLs (relayed via /media)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_FORCE_PATH_STYLE": {
+     "defaultValue": "true",
+     "description": "Path-style S3 addressing",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_CDN": {
+     "defaultValue": "fluxer",
+     "description": "Processed assets bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_REPORTS": {
+     "defaultValue": "fluxer-reports",
+     "description": "Abuse reports bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_HARVESTS": {
+     "defaultValue": "fluxer-harvests",
+     "description": "Data export bucket",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_HARVEST_DOWNLOADS_ENABLED": {
+     "defaultValue": "false",
+     "description": "Presigned data-export downloads",
+     "isOptional": false
+    },
+    "FLUXER_LIVEKIT_ENABLED": {
+     "defaultValue": "false",
+     "description": "Voice/video. Off: LiveKit needs UDP, which Railway does not offer",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PUSH_ENABLED": {
+     "defaultValue": "false",
+     "description": "Browser push notifications (push service not deployed)",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_ENABLED": {
+     "defaultValue": "false",
+     "description": "Email. Off = addresses auto-verified, no password reset mail",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_FROM_EMAIL": {
+     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "From address once SMTP is configured",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "description": "Upload relay token key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_EMAIL": {
+     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web push contact",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_RP_ID": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey relying party",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey origins",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_API_ENDPOINT": {
+     "defaultValue": "http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "http://${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal media proxy URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Upload relay URL",
+     "isOptional": false
+    },
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_ERLANG_COOKIE": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "BEAM distribution cookie",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_STATIC_CDN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Static CDN URL",
+     "isOptional": false
+    }
+   }
+  },
+  "8ee41afd-d8ce-5f8a-8ed6-69a33e217f21": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "media-proxy",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/fluxerapp/fluxer-media-proxy:2026.1003.110721"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "FLUXER_ENV": {
+     "defaultValue": "production",
+     "description": "Runtime environment",
+     "isOptional": false
+    },
+    "FLUXER_SELF_HOSTED": {
+     "defaultValue": "true",
+     "description": "Self-hosted mode",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname (set on the api service)",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_APP_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web app URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "description": "Admin dashboard URL",
+     "isOptional": false
+    },
+    "FLUXER_MARKETING_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Marketing URL",
+     "isOptional": false
+    },
+    "FLUXER_DATABASE_BACKEND": {
+     "defaultValue": "postgres",
+     "description": "Database backend",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_HOST": {
+     "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Postgres host",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PORT": {
+     "defaultValue": "5432",
+     "description": "Postgres port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_DATABASE": {
+     "defaultValue": "${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres database",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "FLUXER_KV_URL": {
+     "defaultValue": "redis://:${{Valkey.VALKEY_PASSWORD}}@${{Valkey.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
+     "description": "Valkey URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_JETSTREAM_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS JetStream URL",
+     "isOptional": false
+    },
+    "FLUXER_SVC_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL for internal services",
+     "isOptional": false
+    },
+    "FLUXER_SVC_SHARD_COUNT": {
+     "defaultValue": "1",
+     "description": "Internal service shard count",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_ENGINE": {
+     "defaultValue": "meilisearch",
+     "description": "Search engine",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_URL": {
+     "defaultValue": "http://${{Meilisearch.RAILWAY_PRIVATE_DOMAIN}}:7700",
+     "description": "Meilisearch URL",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_API_KEY": {
+     "defaultValue": "${{Meilisearch.MEILI_MASTER_KEY}}",
+     "description": "Meilisearch master key",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_PUBLIC_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint used in presigned URLs (relayed via /media)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_FORCE_PATH_STYLE": {
+     "defaultValue": "true",
+     "description": "Path-style S3 addressing",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_CDN": {
+     "defaultValue": "fluxer",
+     "description": "Processed assets bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_REPORTS": {
+     "defaultValue": "fluxer-reports",
+     "description": "Abuse reports bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_HARVESTS": {
+     "defaultValue": "fluxer-harvests",
+     "description": "Data export bucket",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_HARVEST_DOWNLOADS_ENABLED": {
+     "defaultValue": "false",
+     "description": "Presigned data-export downloads",
+     "isOptional": false
+    },
+    "FLUXER_LIVEKIT_ENABLED": {
+     "defaultValue": "false",
+     "description": "Voice/video. Off: LiveKit needs UDP, which Railway does not offer",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PUSH_ENABLED": {
+     "defaultValue": "false",
+     "description": "Browser push notifications (push service not deployed)",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_ENABLED": {
+     "defaultValue": "false",
+     "description": "Email. Off = addresses auto-verified, no password reset mail",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_FROM_EMAIL": {
+     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "From address once SMTP is configured",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "description": "Upload relay token key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_EMAIL": {
+     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web push contact",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_RP_ID": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey relying party",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey origins",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_API_ENDPOINT": {
+     "defaultValue": "http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "http://${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal media proxy URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Upload relay URL",
+     "isOptional": false
+    },
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_MODE": {
+     "defaultValue": "upload",
+     "description": "Serve media + upload relay",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_STORAGE_BACKEND": {
+     "defaultValue": "s3",
+     "description": "Storage backend",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_CORS_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "CORS origins",
+     "isOptional": false
+    },
+    "FLUXER_S3_READ_SIGNED": {
+     "defaultValue": "true",
+     "description": "Sign S3 reads",
+     "isOptional": false
+    }
+   }
+  },
+  "ff29b952-7df7-55c7-a296-cfd099786b05": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "app-proxy",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/fluxerapp/fluxer-app-proxy-self-hosted:2026.1004.174950"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_APP_PROXY_PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "DISCOVERY_UPSTREAM_URL": {
+     "defaultValue": "http://${{Fluxer.RAILWAY_PRIVATE_DOMAIN}}:8088/.well-known/fluxer",
+     "description": "Discovery via the edge's internal listener",
+     "isOptional": false
+    },
+    "PUBLIC_BOOTSTRAP_API_ENDPOINT": {
+     "defaultValue": "/api",
+     "description": "API path in the page bootstrap",
+     "isOptional": false
+    },
+    "PUBLIC_BOOTSTRAP_API_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/api",
+     "description": "Absolute API URL in the page bootstrap",
+     "isOptional": false
+    }
+   }
+  },
+  "500146e4-da5b-52f9-8066-8c8ea7d7f040": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "svc",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "repo": "https://github.com/nomideusz/fluxer-railway",
+    "rootDirectory": "/svc"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "FLUXER_ENV": {
+     "defaultValue": "production",
+     "description": "Runtime environment",
+     "isOptional": false
+    },
+    "FLUXER_SELF_HOSTED": {
+     "defaultValue": "true",
+     "description": "Self-hosted mode",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname (set on the api service)",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_APP_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web app URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "description": "Admin dashboard URL",
+     "isOptional": false
+    },
+    "FLUXER_MARKETING_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Marketing URL",
+     "isOptional": false
+    },
+    "FLUXER_DATABASE_BACKEND": {
+     "defaultValue": "postgres",
+     "description": "Database backend",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_HOST": {
+     "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Postgres host",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PORT": {
+     "defaultValue": "5432",
+     "description": "Postgres port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_DATABASE": {
+     "defaultValue": "${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres database",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "FLUXER_KV_URL": {
+     "defaultValue": "redis://:${{Valkey.VALKEY_PASSWORD}}@${{Valkey.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
+     "description": "Valkey URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_JETSTREAM_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS JetStream URL",
+     "isOptional": false
+    },
+    "FLUXER_SVC_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL for internal services",
+     "isOptional": false
+    },
+    "FLUXER_SVC_SHARD_COUNT": {
+     "defaultValue": "1",
+     "description": "Internal service shard count",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_ENGINE": {
+     "defaultValue": "meilisearch",
+     "description": "Search engine",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_URL": {
+     "defaultValue": "http://${{Meilisearch.RAILWAY_PRIVATE_DOMAIN}}:7700",
+     "description": "Meilisearch URL",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_API_KEY": {
+     "defaultValue": "${{Meilisearch.MEILI_MASTER_KEY}}",
+     "description": "Meilisearch master key",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_PUBLIC_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint used in presigned URLs (relayed via /media)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_FORCE_PATH_STYLE": {
+     "defaultValue": "true",
+     "description": "Path-style S3 addressing",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_CDN": {
+     "defaultValue": "fluxer",
+     "description": "Processed assets bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_REPORTS": {
+     "defaultValue": "fluxer-reports",
+     "description": "Abuse reports bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_HARVESTS": {
+     "defaultValue": "fluxer-harvests",
+     "description": "Data export bucket",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_HARVEST_DOWNLOADS_ENABLED": {
+     "defaultValue": "false",
+     "description": "Presigned data-export downloads",
+     "isOptional": false
+    },
+    "FLUXER_LIVEKIT_ENABLED": {
+     "defaultValue": "false",
+     "description": "Voice/video. Off: LiveKit needs UDP, which Railway does not offer",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PUSH_ENABLED": {
+     "defaultValue": "false",
+     "description": "Browser push notifications (push service not deployed)",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_ENABLED": {
+     "defaultValue": "false",
+     "description": "Email. Off = addresses auto-verified, no password reset mail",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_FROM_EMAIL": {
+     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "From address once SMTP is configured",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "description": "Upload relay token key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_EMAIL": {
+     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web push contact",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_RP_ID": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey relying party",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey origins",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_API_ENDPOINT": {
+     "defaultValue": "http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "http://${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal media proxy URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Upload relay URL",
+     "isOptional": false
+    },
+    "PORT": {
+     "defaultValue": "8090",
+     "description": "Health port of the first internal service (healthcheck)",
+     "isOptional": false
+    }
+   }
+  },
+  "8395fec8-47af-517e-af5e-fd126c5c8c1c": {
+   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "name": "admin",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/_health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/fluxerapp/fluxer-admin:2026.1003.122521"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "FLUXER_ENV": {
+     "defaultValue": "production",
+     "description": "Runtime environment",
+     "isOptional": false
+    },
+    "FLUXER_SELF_HOSTED": {
+     "defaultValue": "true",
+     "description": "Self-hosted mode",
+     "isOptional": false
+    },
+    "FLUXER_BASE_DOMAIN": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Public hostname (set on the api service)",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_SCHEME": {
+     "defaultValue": "https",
+     "description": "Public scheme",
+     "isOptional": false
+    },
+    "FLUXER_PUBLIC_PORT": {
+     "defaultValue": "443",
+     "description": "Public port",
+     "isOptional": false
+    },
+    "FLUXER_TRUST_CLIENT_IP_HEADER": {
+     "defaultValue": "true",
+     "description": "Trust X-Forwarded-For set by the edge",
+     "isOptional": false
+    },
+    "FLUXER_APP_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web app URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_PUBLIC_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Public media URL",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/admin",
+     "description": "Admin dashboard URL",
+     "isOptional": false
+    },
+    "FLUXER_MARKETING_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Marketing URL",
+     "isOptional": false
+    },
+    "FLUXER_DATABASE_BACKEND": {
+     "defaultValue": "postgres",
+     "description": "Database backend",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_HOST": {
+     "defaultValue": "${{Postgres.RAILWAY_PRIVATE_DOMAIN}}",
+     "description": "Postgres host",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PORT": {
+     "defaultValue": "5432",
+     "description": "Postgres port",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_DATABASE": {
+     "defaultValue": "${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres database",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "FLUXER_POSTGRES_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "FLUXER_KV_URL": {
+     "defaultValue": "redis://:${{Valkey.VALKEY_PASSWORD}}@${{Valkey.RAILWAY_PRIVATE_DOMAIN}}:6379/0",
+     "description": "Valkey URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL",
+     "isOptional": false
+    },
+    "FLUXER_NATS_JETSTREAM_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS JetStream URL",
+     "isOptional": false
+    },
+    "FLUXER_SVC_NATS_URL": {
+     "defaultValue": "nats://${{NATS.RAILWAY_PRIVATE_DOMAIN}}:4222",
+     "description": "NATS URL for internal services",
+     "isOptional": false
+    },
+    "FLUXER_SVC_SHARD_COUNT": {
+     "defaultValue": "1",
+     "description": "Internal service shard count",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_ENGINE": {
+     "defaultValue": "meilisearch",
+     "description": "Search engine",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_URL": {
+     "defaultValue": "http://${{Meilisearch.RAILWAY_PRIVATE_DOMAIN}}:7700",
+     "description": "Meilisearch URL",
+     "isOptional": false
+    },
+    "FLUXER_SEARCH_API_KEY": {
+     "defaultValue": "${{Meilisearch.MEILI_MASTER_KEY}}",
+     "description": "Meilisearch master key",
+     "isOptional": false
+    },
+    "FLUXER_S3_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint (SeaweedFS)",
+     "isOptional": false
+    },
+    "FLUXER_S3_PUBLIC_ENDPOINT": {
+     "defaultValue": "http://${{SeaweedFS.RAILWAY_PRIVATE_DOMAIN}}:8333",
+     "description": "S3 endpoint used in presigned URLs (relayed via /media)",
+     "isOptional": false
+    },
+    "FLUXER_S3_REGION": {
+     "defaultValue": "us-east-1",
+     "description": "S3 region",
+     "isOptional": false
+    },
+    "FLUXER_S3_ACCESS_KEY_ID": {
+     "defaultValue": "${{SeaweedFS.S3_ACCESS_KEY}}",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "FLUXER_S3_SECRET_ACCESS_KEY": {
+     "defaultValue": "${{SeaweedFS.S3_SECRET_KEY}}",
+     "description": "S3 secret key",
+     "isOptional": false
+    },
+    "FLUXER_S3_FORCE_PATH_STYLE": {
+     "defaultValue": "true",
+     "description": "Path-style S3 addressing",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_CDN": {
+     "defaultValue": "fluxer",
+     "description": "Processed assets bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_UPLOADS": {
+     "defaultValue": "fluxer-uploads",
+     "description": "Raw uploads bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_REPORTS": {
+     "defaultValue": "fluxer-reports",
+     "description": "Abuse reports bucket",
+     "isOptional": false
+    },
+    "FLUXER_S3_BUCKET_HARVESTS": {
+     "defaultValue": "fluxer-harvests",
+     "description": "Data export bucket",
+     "isOptional": false
+    },
+    "FLUXER_API_PRESIGNED_HARVEST_DOWNLOADS_ENABLED": {
+     "defaultValue": "false",
+     "description": "Presigned data-export downloads",
+     "isOptional": false
+    },
+    "FLUXER_LIVEKIT_ENABLED": {
+     "defaultValue": "false",
+     "description": "Voice/video. Off: LiveKit needs UDP, which Railway does not offer",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_PUSH_ENABLED": {
+     "defaultValue": "false",
+     "description": "Browser push notifications (push service not deployed)",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_ENABLED": {
+     "defaultValue": "false",
+     "description": "Email. Off = addresses auto-verified, no password reset mail",
+     "isOptional": false
+    },
+    "FLUXER_EMAIL_FROM_EMAIL": {
+     "defaultValue": "noreply@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "From address once SMTP is configured",
+     "isOptional": false
+    },
+    "FLUXER_SUDO_MODE_SECRET": {
+     "defaultValue": "${{api.FLUXER_SUDO_MODE_SECRET}}",
+     "description": "Sudo-mode JWT key",
+     "isOptional": false
+    },
+    "FLUXER_CONNECTION_INITIATION_SECRET": {
+     "defaultValue": "${{api.FLUXER_CONNECTION_INITIATION_SECRET}}",
+     "description": "Connection initiation token key",
+     "isOptional": false
+    },
+    "FLUXER_GATEWAY_RPC_AUTH_TOKEN": {
+     "defaultValue": "${{api.FLUXER_GATEWAY_RPC_AUTH_TOKEN}}",
+     "description": "API<->Gateway RPC token",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_SECRET_KEY": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_SECRET_KEY}}",
+     "description": "Media proxy URL signing key",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64": {
+     "defaultValue": "${{api.FLUXER_MEDIA_PROXY_UPLOAD_RELAY_SECRET_BASE64}}",
+     "description": "Upload relay token key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_SECRET_KEY_BASE": {
+     "defaultValue": "${{api.FLUXER_ADMIN_SECRET_KEY_BASE}}",
+     "description": "Admin session key",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_OAUTH_CLIENT_SECRET": {
+     "defaultValue": "${{api.FLUXER_ADMIN_OAUTH_CLIENT_SECRET}}",
+     "description": "Admin OAuth client secret",
+     "isOptional": false
+    },
+    "FLUXER_VAPID_EMAIL": {
+     "defaultValue": "admin@${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Web push contact",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_RP_ID": {
+     "defaultValue": "${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey relying party",
+     "isOptional": false
+    },
+    "FLUXER_PASSKEY_ADDITIONAL_ALLOWED_ORIGINS": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Passkey origins",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_API_ENDPOINT": {
+     "defaultValue": "http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_INTERNAL_MEDIA_PROXY_ENDPOINT": {
+     "defaultValue": "http://${{media-proxy.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal media proxy URL",
+     "isOptional": false
+    },
+    "FLUXER_MEDIA_PROXY_UPLOAD_RELAY_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}/media",
+     "description": "Upload relay URL",
+     "isOptional": false
+    },
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_PORT": {
+     "defaultValue": "8080",
+     "description": "Listen port",
+     "isOptional": false
+    },
+    "FLUXER_ADMIN_BASE_PATH": {
+     "defaultValue": "/admin",
+     "description": "Admin path",
+     "isOptional": false
+    },
+    "FLUXER_API_ENDPOINT": {
+     "defaultValue": "http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080",
+     "description": "Internal API URL",
+     "isOptional": false
+    },
+    "FLUXER_STATIC_CDN_ENDPOINT": {
+     "defaultValue": "https://${{api.FLUXER_BASE_DOMAIN}}",
+     "description": "Static CDN URL",
+     "isOptional": false
+    }
+   }
+  },
+  "9892bf0a-8e35-57dc-b52c-1d7ce43e359d": {
+   "icon": "https://devicons.railway.app/i/postgresql.svg",
+   "name": "Postgres",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "ghcr.io/railwayapp-templates/postgres-ssl:16"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "POSTGRES_DB": {
+     "defaultValue": "fluxer",
+     "description": "Database name",
+     "isOptional": false
+    },
+    "POSTGRES_USER": {
+     "defaultValue": "fluxer",
+     "description": "Database user",
+     "isOptional": false
+    },
+    "POSTGRES_PASSWORD": {
+     "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Auto-generated database password",
+     "isOptional": false
+    },
+    "PGDATA": {
+     "defaultValue": "/var/lib/postgresql/data/pgdata",
+     "description": "Data subdirectory - keeps Postgres happy on Railway volumes",
+     "isOptional": false
+    },
+    "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+     "defaultValue": "60",
+     "description": "Time for Postgres to shut down cleanly on redeploy",
+     "isOptional": false
+    }
+   },
+   "volumeMounts": {
+    "8d20c7d1-47a6-5392-8fff-d24e9dc35ac6": {
+     "mountPath": "/var/lib/postgresql/data"
+    }
+   }
+  },
+  "3b12c87b-3343-59a8-a5ec-92856cbe1d9e": {
+   "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/valkey.svg",
+   "name": "Valkey",
+   "build": {},
+   "deploy": {
+    "startCommand": "/bin/sh -c \"chown -R valkey:valkey /data && exec docker-entrypoint.sh valkey-server --requirepass $VALKEY_PASSWORD --appendonly yes --dir /data --maxmemory 192mb --maxmemory-policy noeviction\"",
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "valkey/valkey:9.1-alpine"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "VALKEY_PASSWORD": {
+     "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Auto-generated Valkey password",
+     "isOptional": false
+    }
+   },
+   "volumeMounts": {
+    "87148561-abf4-5c89-836d-20ac491d5411": {
+     "mountPath": "/data"
+    }
+   }
+  },
+  "7fe7267a-40e9-5b16-9451-45b83073bbc4": {
+   "icon": "https://cdn.simpleicons.org/natsdotio",
+   "name": "NATS",
+   "build": {},
+   "deploy": {
+    "startCommand": "nats-server -js -sd /data -m 8222",
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "nats:2.14-alpine"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {},
+   "volumeMounts": {
+    "daefba23-a7ac-5905-b01e-b631f84e0825": {
+     "mountPath": "/data"
+    }
+   }
+  },
+  "84e430e9-b216-52fd-aaba-71dedeabf3c6": {
+   "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/meilisearch.svg",
+   "name": "Meilisearch",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "getmeili/meilisearch:v1.53"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "MEILI_MASTER_KEY": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Auto-generated Meilisearch master key",
+     "isOptional": false
+    },
+    "MEILI_ENV": {
+     "defaultValue": "production",
+     "description": "Meilisearch mode",
+     "isOptional": false
+    },
+    "MEILI_NO_ANALYTICS": {
+     "defaultValue": "true",
+     "description": "Disable telemetry",
+     "isOptional": false
+    },
+    "MEILI_HTTP_ADDR": {
+     "defaultValue": "[::]:7700",
+     "description": "Listen on IPv6 + IPv4 for private networking",
+     "isOptional": false
+    },
+    "MEILI_MAX_INDEXING_MEMORY": {
+     "defaultValue": "256mb",
+     "description": "Indexing memory cap",
+     "isOptional": false
+    },
+    "MEILI_MAX_INDEXING_THREADS": {
+     "defaultValue": "2",
+     "description": "Indexing threads",
+     "isOptional": false
+    }
+   },
+   "volumeMounts": {
+    "a45e1f41-269d-548b-ae20-d7464ad1b419": {
+     "mountPath": "/meili_data"
+    }
+   }
+  },
+  "b519800f-d321-5b66-97d0-29bc94388ebf": {
+   "icon": "https://raw.githubusercontent.com/seaweedfs/seaweedfs/master/note/seaweedfs.png",
+   "name": "SeaweedFS",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "repo": "https://github.com/nomideusz/fluxer-railway",
+    "rootDirectory": "/seaweedfs"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "variables": {
+    "S3_ACCESS_KEY": {
+     "defaultValue": "fluxer",
+     "description": "S3 access key",
+     "isOptional": false
+    },
+    "S3_SECRET_KEY": {
+     "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Auto-generated S3 secret key",
+     "isOptional": false
+    },
+    "GOMEMLIMIT": {
+     "defaultValue": "512MiB",
+     "description": "Go heap soft limit",
+     "isOptional": false
+    }
+   },
+   "volumeMounts": {
+    "27dd69d1-466b-512d-b9a3-7c7ddd06dd8e": {
+     "mountPath": "/data"
+    }
+   }
+  }
+ }
+}

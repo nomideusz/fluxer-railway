@@ -1,0 +1,70 @@
+# Path router for Fluxer on Railway. Mirrors deploy/self-hosting/Caddyfile, with
+# upstreams on Railway private networking and static assets served in-process.
+{
+	auto_https off
+	admin off
+	servers {
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges 100.64.0.0/10}
+		trusted_proxies_strict
+	}
+}
+
+:{$PORT:8080} {
+	encode zstd gzip
+
+	handle /_health {
+		respond "OK" 200
+	}
+
+	handle_path /api/* {
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	handle /gateway {
+		rewrite * /
+		reverse_proxy {$GATEWAY_UPSTREAM}
+	}
+
+	handle_path /gateway/* {
+		reverse_proxy {$GATEWAY_UPSTREAM}
+	}
+
+	handle_path /media/* {
+		reverse_proxy {$MEDIA_UPSTREAM}
+	}
+
+	handle /admin {
+		rewrite * /
+		reverse_proxy {$ADMIN_UPSTREAM}
+	}
+
+	handle_path /admin/* {
+		reverse_proxy {$ADMIN_UPSTREAM}
+	}
+
+	@staticAssets path /web/* /emoji/* /libs/* /avatars/* /badges/* /desktop/*
+	handle @staticAssets {
+		root * /srv/fluxer-static
+		header {
+			X-Content-Type-Options nosniff
+			Access-Control-Allow-Origin *
+			Cache-Control "public, max-age=3600, must-revalidate"
+		}
+		file_server
+	}
+
+	handle /.well-known/fluxer {
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	handle {
+		reverse_proxy {$APP_UPSTREAM}
+	}
+}
+
+# Internal listener app-proxy fetches discovery from; adds the client-IP header the API requires.
+:8088 {
+	handle /.well-known/fluxer {
+		reverse_proxy {$API_UPSTREAM}
+	}
+}

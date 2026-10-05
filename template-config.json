@@ -2233,6 +2233,11 @@
      "defaultValue": "512MiB",
      "description": "Go heap soft limit",
      "isOptional": false
+    },
+    "WEED_MASTER_VOLUME_GROWTH_COPY_1": {
+     "defaultValue": "1",
+     "description": "Grow one volume at a time (upstream default)",
+     "isOptional": false
     }
    },
    "volumeMounts": {

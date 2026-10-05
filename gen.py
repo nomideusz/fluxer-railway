@@ -217,6 +217,7 @@ services = [
         "S3_ACCESS_KEY": v("fluxer", "S3 access key"),
         "S3_SECRET_KEY": v(secret(48), "Auto-generated S3 secret key"),
         "GOMEMLIMIT": v("512MiB", "Go heap soft limit"),
+        "WEED_MASTER_VOLUME_GROWTH_COPY_1": v("1", "Grow one volume at a time (upstream default)"),
     }, volume="/data"),
 ]
 

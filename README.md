@@ -50,7 +50,7 @@ Upstream's self-hosting setup is about 25 containers. This template collapses it
 
 - [Fluxer self-hosting docs](https://docs.fluxer.app/)
 - [Fluxer on GitHub](https://github.com/fluxerapp/fluxer)
-- [Template source on GitHub](https://github.com/nomideusz/fluxer-railway)
+- [Template source on GitHub](https://github.com/two-workspaces/fluxer)
 
 ### Implementation Details
 

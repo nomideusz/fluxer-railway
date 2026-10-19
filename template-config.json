@@ -1,7 +1,7 @@
 {
  "services": {
   "7322c947-0399-5860-965d-363a9bf076f3": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "Fluxer",
    "build": {},
    "deploy": {
@@ -11,7 +11,7 @@
     "restartPolicyMaxRetries": 10
    },
    "source": {
-    "repo": "https://github.com/nomideusz/fluxer-railway",
+    "repo": "https://github.com/two-workspaces/fluxer",
     "rootDirectory": "/edge"
    },
    "networking": {
@@ -103,7 +103,7 @@
    }
   },
   "c97dc882-4710-5056-bd05-d574435fe8fc": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "api",
    "build": {},
    "deploy": {
@@ -422,7 +422,7 @@
    }
   },
   "1a9efa50-1935-5d74-a61d-90bafed4ba2c": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "worker",
    "build": {},
    "deploy": {
@@ -736,7 +736,7 @@
    }
   },
   "9768c4f6-efee-55db-b2e4-de5944d8e56e": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "gateway",
    "build": {},
    "deploy": {
@@ -1045,7 +1045,7 @@
    }
   },
   "8ee41afd-d8ce-5f8a-8ed6-69a33e217f21": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "media-proxy",
    "build": {},
    "deploy": {
@@ -1359,7 +1359,7 @@
    }
   },
   "ff29b952-7df7-55c7-a296-cfd099786b05": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "app-proxy",
    "build": {},
    "deploy": {
@@ -1448,7 +1448,7 @@
    }
   },
   "500146e4-da5b-52f9-8066-8c8ea7d7f040": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "svc",
    "build": {},
    "deploy": {
@@ -1458,7 +1458,7 @@
     "restartPolicyMaxRetries": 10
    },
    "source": {
-    "repo": "https://github.com/nomideusz/fluxer-railway",
+    "repo": "https://github.com/two-workspaces/fluxer",
     "rootDirectory": "/svc"
    },
    "networking": {
@@ -1738,7 +1738,7 @@
    }
   },
   "8395fec8-47af-517e-af5e-fd126c5c8c1c": {
-   "icon": "https://raw.githubusercontent.com/nomideusz/fluxer-railway/main/icon.svg",
+   "icon": "https://raw.githubusercontent.com/two-workspaces/fluxer/main/icon.svg",
    "name": "admin",
    "build": {},
    "deploy": {
@@ -2212,7 +2212,7 @@
     "restartPolicyMaxRetries": 10
    },
    "source": {
-    "repo": "https://github.com/nomideusz/fluxer-railway",
+    "repo": "https://github.com/two-workspaces/fluxer",
     "rootDirectory": "/seaweedfs"
    },
    "networking": {
